@@ -78,6 +78,7 @@ no Bot::Backbone::Service; # <-- remove my as
 use Class::Load qw( load_first_existing_class );
 use Moose::Util::TypeConstraints; # <-- bring in their as
 use Scalar::Util qw( blessed );
+use List::MoreUtils qw( all );
 use Try::Tiny;
 
 subtype 'Bot::Backbone::Service::Ticket::TrackerList'
