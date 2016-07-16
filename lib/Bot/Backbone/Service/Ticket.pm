@@ -10,7 +10,6 @@ with qw(
 
 =head1 SYNOPSIS
 
-    # And then in your bot configuration:
     service my_tickets => (
         service  => 'Ticket',
         trackers => [{

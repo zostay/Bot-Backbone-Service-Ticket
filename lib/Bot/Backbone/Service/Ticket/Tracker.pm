@@ -76,6 +76,21 @@ has title => (
     required    => 1,
 );
 
+=head2 attachment
+
+I<Optional.> Wehn set, this is a L<String::Errf> format pattern used to create
+an attachment. This is useful when your bot runs under
+L<Bot::Backbone::Service::SlackChat> in case you want an extended block with
+more information in it.
+
+=cut
+
+has attachment => (
+    is          => 'ro',
+    isa         => 'Str',
+    predicate   => 'has_attachment',
+);
+
 =head2 link
 
 I<Optional.> This is a L<String::Errf> format pattern used to create a link when
@@ -146,7 +161,19 @@ sub titles_for_string {
             my $issue  = $+{issue};
             my $scheme = $+{scheme};
             my $title  = $self->issue_title($issue, !defined($scheme));
-            push @titles, $title if defined $title;
+
+            if (defined $title) {
+                if ($self->has_attachment) {
+                    my $attachment = $self->issue_attachment($issue);
+                    push @titles, {
+                        text       => $title,
+                        attachment => $attachment,
+                    };
+                }
+                else {
+                    push @titles, $title;
+                }
+            }
         }
     }
 
@@ -199,6 +226,21 @@ L</lookup_issue>.
 sub issue_link {
     my ($self, $issue) = @_;
     return ' <' . errf($self->link, $issue) . '>';
+}
+
+=head2 issue_attachment
+
+  my $attachment = $service->issue_attachment(\%issue);
+
+Returns the text to use as the attachment. Returns C<undef> if not C<attachment>
+format has been set.
+
+=cut
+
+sub issue_attachment {
+    my ($self, $issue) = @_;
+    return unless $self->has_attachment;
+    return errf($self->attachment, $issue);
 }
 
 1;
